@@ -15,11 +15,11 @@ Requirements
     * double down
     * surrender
     * split
-* After player&#39;s final action in hand, should learn the outcome
-* Use typical dealer strategy of standing on 17 or greater
-* Will support multiple players
-* Will support multiple blackjack games
-* Will use an 8-deck shoe with a cut-point 75% into the shoe
+* After a player&#39;s final action in a hand, they should learn the outcome
+* Use a typical dealer strategy of standing on 17 or greater
+* Support multiple players
+* Support multiple concurrent blackjack games
+* Use an 8-deck shoe with a cut-point 75% into the shoe
 * If a player is not at a table, they are in the "lobby"
     * From the lobby, players can join tables and view tables
 
