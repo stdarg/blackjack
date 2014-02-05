@@ -30,7 +30,6 @@ Stretch goals
 * Chat functionality for players.
 * Player persistance for score (winnings).
 
-
 # REST API
 
 ## login
@@ -187,7 +186,7 @@ Indicates players are in on the next hand and the amount they are betting.
   will an array containing all possible values.
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
   hand2, from a split, there will also be a h2Over21.
-* **done** - True if the player&#39s interest in the hand is concluded.
+* **done** - True if the player&#39;s interest in the hand is concluded.
 
 ## hit
 Informs the dealer to add another card to the player&#39;s hand. If the player
@@ -228,7 +227,7 @@ exceeds 21, the player loses the hand.
   will an array containing all possible values.
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
   hand2, there will also be a h2_over21.
-* **done** - True if the player&#39s interest in the hand is concluded.
+* **done** - True if the player&#39;s interest in the hand is concluded.
 
 ## stand
 Informs the dealer, you want to stand on your hand, no more cards are to be
@@ -269,7 +268,7 @@ results are known.
   will an array containing all possible values.
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
   hand2, there will also be a h2_over21.
-* **done** - True if the player&#39s interest in the hand is concluded.
+* **done** - True if the player&#39;s interest in the hand is concluded.
 
 ## doubledown
 The player may increase the initial bet by up to 100% in exchange for
@@ -314,7 +313,7 @@ and point with one finger.
   will an array containing all possible values.
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
   hand2, there will also be a h2_over21.
-* **done** - True if the player&#39s interest in the hand is concluded.
+* **done** - True if the player&#39;s interest in the hand is concluded.
 
 ## surrender
 Only available as first decision of a hand: Some games offer the option to
@@ -336,6 +335,7 @@ there being no standard hand signal.
 **JSON Reponse**
 
     {
+        "success": true,
         "cmd": "surrender"
         "balance": 390,
         "bet": 10,
@@ -354,7 +354,7 @@ there being no standard hand signal.
   will an array containing all possible values.
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
   hand2, there will also be a h2_over21.
-* **done** - True if the player&#39s interest in the hand is concluded.
+* **done** - True if the player&#39;s interest in the hand is concluded.
 
 ## split
 Only available as the first decision of a hand: If the first two cards have the
@@ -411,5 +411,5 @@ box; point with two fingers spread into a V formation.
   will an array containing all possible values.
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
   hand2, there will also be a h2_over21.
-* **done** - True if the player&#39s interest in the hand is concluded.
+* **done** - True if the player&#39;s interest in the hand is concluded.
 
