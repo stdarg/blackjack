@@ -32,6 +32,17 @@ Stretch goals
 
 # REST API
 
+All responses have:
+
+* a JSON body
+* a "cmd" property with the name of the command
+* a "success" boolean property that is either "true" or "false"
+* if "success" if false, there is an "error" property with a string message
+
+If the request is a POST, then the request body is JSON.
+
+The REST API commands follow.
+
 ## login
 Allows players to login to the game, where they can view tables and join a
 game.
