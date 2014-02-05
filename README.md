@@ -1,25 +1,27 @@
 Requirements
 ============
 
-* Server must have an REST API for playing Blackjack.
-* Must support: way to receive 2 starting cards & dealer&#39;s initial card.
+* Server must have an REST API for playing Blackjack
+* Must support: way to receive 2 starting cards & dealer&#39;s initial card
 * Must support player actions:
     * login
     * quit
     * view the tables
     * join a table
-    * leave a game
+    * leave a table
     * bet
     * hit
     * stand
     * double down
     * surrender
     * split
-* After player&#39;s final action in hand, should learn the outcome.
-* Use typical dealer strategy of standing on 17 or greater.
-* Will support multiple players.
-* Will support multiple black jack games.
-* Will use an 8-deck shoe with a cut-point 75% into the shoe.
+* After player&#39;s final action in hand, should learn the outcome
+* Use typical dealer strategy of standing on 17 or greater
+* Will support multiple players
+* Will support multiple black jack games
+* Will use an 8-deck shoe with a cut-point 75% into the shoe
+* If a player is not at a table, they are in the "lobby"
+    * From the lobby, players can join tables and view tables
 
 Stretch goals
 
@@ -27,8 +29,8 @@ Stretch goals
 * Discovery between client and server using UDP broadcast
 * Test framework with multiple concurrent clients that do set actions and random
   actions
-* Chat functionality for players.
-* Player persistance for score (winnings).
+* Chat functionality for players
+* Player persistance for score (winnings)
 
 # REST API
 
@@ -91,7 +93,7 @@ Allows players to see the tables and who is at each table.
     }
 
 * **tables** - an arary of all the tables where the key is the table id and the
-    data describes the table.
+    data describes the table
     * **players** - array of the players at the table
     * **state** - game state for the table
 
@@ -175,8 +177,8 @@ Indicates players are in on the next hand and the amount they are betting.
 
     { "playerId": 3, "bet": 10 }
 
-* **id** - The player id received when joining the game.
-* **bet** - The amount of currency to bet on the next hand.
+* **id** - player id received when joining the game
+* **bet** - amount of currency to bet on the next hand
 
 **JSON Response**
 
@@ -190,14 +192,14 @@ Indicates players are in on the next hand and the amount they are betting.
         "done": false
     }
 
-* **balance** - the player&#39;s currency balance minus the bet they just placed.
-* **hand** - The cards in the player&#39s hand. By index position in a deck. If
-  player has split, there will also be a &#34;hand2&#34;.
-* **total** - The total value of the hand. If there is an ace present the value
-  will an array containing all possible values.
+* **balance** - player&#39;s currency balance minus the bet they just placed
+* **hand** - cards in the player&#39s hand. By index position in a deck. If
+  player has split, there will also be a &#34;hand2&#34;
+* **total** - total value of the hand. If there is an ace present the value
+  will an array containing all possible values
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
-  hand2, from a split, there will also be a h2Over21.
-* **done** - True if the player&#39;s interest in the hand is concluded.
+  hand2, from a split, there will also be a h2Over21
+* **done** - True if the player&#39;s interest in the hand is concluded
 
 ## hit
 Informs the dealer to add another card to the player&#39;s hand. If the player
@@ -212,9 +214,9 @@ exceeds 21, the player loses the hand.
 
     { "playerId": 3, hand: 3 }
 
-* **id** - The player id given when the player joins the game.
-* **hand** - The hand, upon which, to hit:
-    * 1 - for default, if not specified, 1 is assumed.
+* **id** - player id given when the player joins the game
+* **hand** - hand, upon which, to hit:
+    * 1 - for default, if not specified, 1 is assumed
     * 2 - stand on the second hand only
     * 3 - stand on both hands
 
@@ -231,14 +233,14 @@ exceeds 21, the player loses the hand.
         "done": false
     }
 
-* **balance** - the player&#39;s currency balance minus the bet they just placed.
-* **hand** - The cards in the player&#39s hand. By index position in a deck. If
-  player has split, there will also be a &#34;hand2&#34;.
-* **total** - The total value of the hand. If there is an ace present the value
-  will an array containing all possible values.
+* **balance** - player&#39;s currency balance minus the bet they just placed.
+* **hand** - cards in the player&#39s hand. By index position in a deck. If
+  player has split, there will also be a &#34;hand2&#34;
+* **total** - total value of the hand. If there is an ace present the value
+  will an array containing all possible values
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
-  hand2, there will also be a h2_over21.
-* **done** - True if the player&#39;s interest in the hand is concluded.
+  hand2, there will also be a h2_over21
+* **done** - True if the player&#39;s interest in the hand is concluded
 
 ## stand
 Informs the dealer, you want to stand on your hand, no more cards are to be
@@ -254,9 +256,9 @@ results are known.
 
     { "playerId": 3, "hand": 1 }
 
-* **id** - The player id given when the player joins the game.
+* **id** - The player id given when the player joins the game
 * **hand** - The hand upon which, to stand:
-    * 1 - for default, if not specified, 1 is assumed.
+    * 1 - for default, if not specified, 1 is assumed
     * 2 - stand on the second hand only
     * 3 - stand on both hands
 
@@ -272,14 +274,15 @@ results are known.
         "done": true
     }
 
-* **balance** - the player&#39;s currency balance minus the bet they just placed.
-* **hand** - The cards in the player&#39s hand. By index position in a deck. If
-  player has split, there will also be a &#34;hand2&#34;.
-* **total** - The total value of the hand. If there is an ace present the value
-  will an array containing all possible values.
+* **balance** - the player&#39;s currency balance minus the bet they just
+  placed
+* **hand** - cards in the player&#39s hand. By index position in a deck. If
+  player has split, there will also be a &#34;hand2&#34;
+* **total** - total value of the hand. If there is an ace present the value
+  t will be an array containing all possible values
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
-  hand2, there will also be a h2_over21.
-* **done** - True if the player&#39;s interest in the hand is concluded.
+  hand2, there will also be a h2_over21
+* **done** - True if the player&#39;s interest in the hand is concluded
 
 ## doubledown
 The player may increase the initial bet by up to 100% in exchange for
@@ -315,16 +318,16 @@ and point with one finger.
         "done": true
     }
 
-* **balance** - the player&#39;s currency balance minus the bet they just
-  placed.
-* **bet** - the player&#39s current bet.
-* **hand** - The cards in the player&#39s hand. By index position in a deck. If
-  player has split, there will also be a &#34;hand2&#34;.
+* **balance** - player&#39;s currency balance minus the bet they just
+  placed
+* **bet** - player&#39s current bet
+* **hand** - cards in the player&#39s hand. By index position in a deck. If
+  player has split, there will also be a &#34;hand2&#34;
 * **total** - The total value of the hand. If there is an ace present the value
-  will an array containing all possible values.
+  will an array containing all possible values
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
-  hand2, there will also be a h2_over21.
-* **done** - True if the player&#39;s interest in the hand is concluded.
+  hand2, there will also be a h2_over21
+* **done** - True if the player&#39;s interest in the hand is concluded
 
 ## surrender
 Only available as first decision of a hand: Some games offer the option to
@@ -357,15 +360,15 @@ there being no standard hand signal.
     }
 
 * **balance** - the player&#39;s currency balance minus the bet they just
-  placed.
-* **bet** - the player&#39s current bet.
+  placed
+* **bet** - the player&#39s current bet
 * **hand** - The cards in the player&#39s hand. By index position in a deck. If
-  player has split, there will also be a &#34;hand2&#34;.
+  player has split, there will also be a &#34;hand2&#34;
 * **total** - The total value of the hand. If there is an ace present the value
-  will an array containing all possible values.
+  will an array containing all possible values
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
-  hand2, there will also be a h2_over21.
-* **done** - True if the player&#39;s interest in the hand is concluded.
+  hand2, there will also be a h2_over21
+* **done** - True if the player&#39;s interest in the hand is concluded
 
 ## split
 Only available as the first decision of a hand: If the first two cards have the
@@ -414,13 +417,13 @@ box; point with two fingers spread into a V formation.
         "done": false
     }
 
-* **balance** - the player&#39;s currency balance minus the bet they just placed.
-* **bet** - the player&#39s current bet which is now an array, 1 bet for each hand.
-* **hand** - The cards in the player&#39s hand. By index position in a deck. If
-  player has split, there will also be a &#34;hand2&#34;.
-* **total** - The total value of the hand. If there is an ace present the value
-  will an array containing all possible values.
+* **balance** - player&#39;s currency balance minus the bet they just placed
+* **bet** - player&#39s current bet which is now an array, 1 bet for each hand
+* **hand** - cards in the player&#39s hand. By index position in a deck. If
+  player has split, there will also be a &#34;hand2&#34;
+* **total** - total value of the hand. If there is an ace present the value
+  will an array containing all possible values
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
-  hand2, there will also be a h2_over21.
-* **done** - True if the player&#39;s interest in the hand is concluded.
+  hand2, there will also be a h2_over21
+* **done** - True if the player&#39;s interest in the hand is concluded
 
