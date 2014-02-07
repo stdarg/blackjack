@@ -14,8 +14,8 @@
     "laxcomma"      : true,
     "maxcomplexity" : 39,
     "maxdepth"      : 5,
-    "maxlen"        : 110,
-    "maxparams"     : 4,
+    "maxlen"        : 80,
+    "maxparams"     : 6,
     "maxstatements" : 100,
     "newcap"        : true,
     "noarg"         : true,
@@ -38,8 +38,6 @@
     "globals" : {
         "it"        : true,
         "should"    : true,
-        "console"   : true,
-        "logger"    : true,
         "describe"  : true
     }
 }

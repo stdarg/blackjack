@@ -1,6 +1,6 @@
 'use strict';
 var request = require('request');
-var debug = require('debug')('bj:restApi');
+//var debug = require('debug')('bj:restApi');
 var assert = require('assert');
 var async = require('async');
 var is = require('is2');
@@ -18,7 +18,9 @@ async.series([
         joinTable,
         viewTables,
         bet,
-        viewTables
+        viewTables,
+        hit,
+        viewTables,
     ],
     function(err) {
         if (err)
@@ -85,6 +87,17 @@ function bet(cb) {
         if (err)
             return cb(err);
         console.log('bet',json);
+        assert.ok(json.success === true);
+        cb();
+    });
+}
+
+function hit(cb) {
+    var data = { playerId: playerId, hand: 1 };
+    request({method:'POST', json:data, uri: 'http://localhost:4201/hit'}, function(err, res, json) {
+        if (err)
+            return cb(err);
+        console.log('hit',json);
         assert.ok(json.success === true);
         cb();
     });
