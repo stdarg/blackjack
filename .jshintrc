@@ -36,8 +36,8 @@
     "white"         : false,
 
     "globals" : {
+        "describe"  : true,
         "it"        : true,
-        "should"    : true,
-        "describe"  : true
+        "logger"    : true
     }
 }
