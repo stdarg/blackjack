@@ -37,9 +37,6 @@ tags
 # emacs turds
 *~
 
-# pid files
-*.pid
-
 # C temp files
 *.[oa]
 
