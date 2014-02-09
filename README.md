@@ -66,15 +66,15 @@ game.
 
 ```JSON
 {
-  "success":true,
-  "cmd":"login",
-  "playerId":1,
-  "tables":{
-    "1":{
-      "id":1,
-      "players":{ },
-      "numPlayers":0,
-      "state":"waiting for players"
+  "success": true,
+  "cmd": "login",
+  "playerId": 1,
+  "tables": {
+    "1": {
+      "id": 1,
+      "players": { },
+      "numPlayers": 0,
+      "state": "waiting for players"
     }
   }
 }
@@ -95,14 +95,14 @@ Allows players to see the tables and who is at each table.
 
 ```JSON
 {
-  "success":true,
-  "cmd":"viewTables",
-  "tables":{
-    "1":{
-      "id":1,
-      "players":{ },
-      "numPlayers":0,
-      "state":"waiting for players"
+  "success": true,
+  "cmd": "viewTables",
+  "tables": {
+    "1": {
+      "id": 1,
+      "players": { },
+      "numPlayers": 0,
+      "state": "waiting for players"
     }
   }
 }
@@ -137,21 +137,21 @@ scale.
 
 ```JSON
 {
-  "success":true,
-  "cmd":"joinTable",
-  "table":{
-    "id":1,
-    "players":{
-      "1":{
-        "name":"Edmond",
-        "bet":-1,
-        "hand":[ ],
-        "done":false,
-        "busted":false
+  "success": true,
+  "cmd": "joinTable",
+  "table": {
+    "id": 1,
+    "players": {
+      "1": {
+        "name": "Edmond",
+        "bet": -1,
+        "hand": [ ],
+        "done": false,
+        "busted": false
       }
     },
-    "numPlayers":1,
-    "state":"betting"
+    "numPlayers": 1,
+    "state": "betting"
   }
 }
 ```
@@ -180,14 +180,14 @@ information describing all the tables.
 
 ```JSON
 {
-  "success":true,
-  "cmd":"leaveTable",
-  "tables":{
-    "1":{
-      "id":1,
-      "players":{ },
-      "numPlayers":0,
-      "state":"waiting for players"
+  "success": true,
+  "cmd": "leaveTable",
+  "tables": {
+    "1": {
+      "id": 1,
+      "players": { },
+      "numPlayers": 0,
+      "state": "waiting for players"
     }
   }
 }
@@ -241,36 +241,36 @@ Indicates players are in on the next hand and the amount they are betting.
 
 ```JSON
 {
-  "success":true,
-  "cmd":"bet",
-  "bet":10,
-  "hand":[
-    { "suit":"spades", "rank":"Queen", "value":10 },
-    { "suit":"spades", "rank":"2", "value":2 }
+  "success": true,
+  "cmd": "bet",
+  "bet": 10,
+  "hand": [
+    { "suit": "spades", "rank": "Queen", "value": 10 },
+    { "suit": "spades", "rank": "2", "value": 2 }
   ],
-  "table":{
-    "id":1,
-    "players":{
-      "1":{
-        "name":"Edmond",
-        "bet":10,
-        "hand":[
-          { "suit":"spades", "rank":"Queen", "value":10 },
-          { "suit":"spades", "rank":"2", "value":2 }
+  "table": {
+    "id": 1,
+    "players": {
+      "1": {
+        "name": "Edmond",
+        "bet": 10,
+        "hand": [
+          { "suit": "spades", "rank": "Queen", "value": 10 },
+          { "suit": "spades", "rank": "2", "value": 2 }
         ],
-        "done":false,
-        "busted":false
+        "done": false,
+        "busted": false
       }
     },
-    "dealer":{
-      "name":"Dealer",
-      "hand":[
-        { "suit":"hearts", "rank":"4", "value":4 },
+    "dealer": {
+      "name": "Dealer",
+      "hand": [
+        { "suit": "hearts", "rank": "4", "value": 4 },
         "face down card"
       ]
     },
-    "numPlayers":1,
-    "state":"dealing"
+    "numPlayers": 1,
+    "state": "dealing"
   }
 }
 ```
@@ -309,37 +309,37 @@ exceeds 21, the player loses the hand.
 
 ```JSON
 {
-  "success":true,
-  "cmd":"hit",
-  "hand":[
-    { "suit":"spades", "rank":"Queen", "value":10 },
-    { "suit":"spades", "rank":"2", "value":2 },
-    { "suit":"clubs", "rank":"2", "value":2 }
+  "success": true,
+  "cmd": "hit",
+  "hand": [
+    { "suit": "spades", "rank": "Queen", "value": 10 },
+    { "suit": "spades", "rank": "2", "value": 2 },
+    { "suit": "clubs", "rank": "2", "value": 2 }
   ],
-  "table":{
-    "id":1,
-    "players":{
-      "1":{
-        "name":"Edmond",
-        "bet":10,
-        "hand":[
-          { "suit":"spades", "rank":"Queen", "value":10 },
-          { "suit":"spades", "rank":"2", "value":2 },
-          { "suit":"clubs", "rank":"2", "value":2 }
+  "table": {
+    "id": 1,
+    "players": {
+      "1": {
+        "name": "Edmond",
+        "bet": 10,
+        "hand": [
+          { "suit": "spades", "rank": "Queen", "value": 10 },
+          { "suit": "spades", "rank": "2", "value": 2 },
+          { "suit": "clubs", "rank": "2", "value": 2 }
         ],
-        "done":false,
-        "busted":false
+        "done": false,
+        "busted": false
       }
     },
-    "dealer":{
-      "name":"Dealer",
-      "hand":[
-        { "suit":"hearts", "rank":"4", "value":4 },
+    "dealer": {
+      "name": "Dealer",
+      "hand": [
+        { "suit": "hearts", "rank": "4", "value": 4 },
         "face down card"
       ]
     },
-    "numPlayers":1,
-    "state":"dealing"
+    "numPlayers": 1,
+    "state": "dealing"
   }
 }
 ```
@@ -377,32 +377,32 @@ results are known.
 
 ```JSON
 {
-   "success":true,
-   "cmd":"stand",
-   "hand":[
+   "success": true,
+   "cmd": "stand",
+   "hand": [
 
    ],
-   "table":{
-      "id":1,
-      "players":{
-         "1":{
-            "name":"Edmond",
-            "bet":-1,
-            "hand":[
+   "table": {
+      "id": 1,
+      "players": {
+         "1": {
+            "name": "Edmond",
+            "bet": -1,
+            "hand": [
             ],
-            "done":true,
-            "busted":false
+            "done": true,
+            "busted": false
          }
       },
-      "dealer":{
-         "name":"Dealer",
-         "hand":[ { "suit":"hearts", "rank":"4", "value":4 },
-            { "suit":"clubs", "rank":"4", "value":4 },
-            { "suit":"clubs", "rank":"Jack", "value":10 }
+      "dealer": {
+         "name": "Dealer",
+         "hand": [ { "suit": "hearts", "rank": "4", "value": 4 },
+            { "suit": "clubs", "rank": "4", "value": 4 },
+            { "suit": "clubs", "rank": "Jack", "value": 10 }
          ]
       },
-      "numPlayers":1,
-      "state":"betting"
+      "numPlayers": 1,
+      "state": "betting"
    }
 }
 ```
