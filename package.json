@@ -15,15 +15,20 @@
   ],
   "author": "Edmond Meinfelder",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/stdarg/blackjack.git"
+  },
   "dependencies": {
     "async": "0.2.10",
     "debug": "0.7.4",
     "fuzelog": "1.4.7",
+    "have": "0.2.3",
     "is2": "0.0.12",
     "json-rest-api": "0.0.5",
     "lodash": "2.4.1",
     "mersenne-twister": "1.0.1",
-    "have": "0.2.3",
+    "prompt": "0.2.12",
     "request": "2.33.0",
     "sprintf.js": "0.1.4",
     "udp-discovery": "0.0.3"
