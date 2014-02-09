@@ -11,20 +11,14 @@
     "test": "./node_modules/.bin/mocha --reporter list"
   },
   "keywords": [
-    "blackjack",
-    "game",
-    "server",
-    "client",
-    "card",
-    "casino",
-    "betting",
-    "bet"
+    "blackjack", "game", "server", "client", "card", "casino", "betting", "bet"
   ],
   "author": "Edmond Meinfelder",
   "license": "MIT",
   "dependencies": {
     "async": "0.2.10",
     "debug": "0.7.4",
+    "fuzelog": "1.4.7",
     "is2": "0.0.12",
     "json-rest-api": "0.0.5",
     "lodash": "2.4.1",
@@ -35,6 +29,7 @@
     "udp-discovery": "0.0.3"
   },
   "devDependencies": {
-    "mocha": "1.17.1"
+    "mocha": "1.17.1",
+    "names": "0.0.2"
   }
 }
