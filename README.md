@@ -66,14 +66,15 @@ game.
 
 ```JSON
 {
-  "success": true,
-  "cmd": "login",
-  "playerId": 1,
-  "tables": {
-    "1": {
-      "id": 1,
-      "players": [ ],
-      "state": "waiting for players"
+  "success":true,
+  "cmd":"login",
+  "playerId":1,
+  "tables":{
+    "1":{
+      "id":1,
+      "players":{ },
+      "numPlayers":0,
+      "state":"waiting for players"
     }
   }
 }
@@ -94,21 +95,14 @@ Allows players to see the tables and who is at each table.
 
 ```JSON
 {
-  "success": true,
-  "cmd": "viewTables",
-  "tables": {
-    "1": {
-      "id": 1,
-      "players": [
-        {
-          "name": "Edmond",
-          "bet": -1,
-          "hand": [ ],
-          "done": false,
-          "busted": false
-        }
-      ],
-      "state": "betting"
+  "success":true,
+  "cmd":"viewTables",
+  "tables":{
+    "1":{
+      "id":1,
+      "players":{ },
+      "numPlayers":0,
+      "state":"waiting for players"
     }
   }
 }
@@ -143,20 +137,21 @@ scale.
 
 ```JSON
 {
-  "success": true,
-  "cmd": "joinTable",
-  "table": {
-    "id": 1,
-    "players": [
-      {
-        "name": "Edmond",
-        "bet": -1,
-        "hand": [ ],
-        "done": false,
-        "busted": false
+  "success":true,
+  "cmd":"joinTable",
+  "table":{
+    "id":1,
+    "players":{
+      "1":{
+        "name":"Edmond",
+        "bet":-1,
+        "hand":[ ],
+        "done":false,
+        "busted":false
       }
-    ],
-    "state": "betting"
+    },
+    "numPlayers":1,
+    "state":"betting"
   }
 }
 ```
@@ -185,13 +180,14 @@ information describing all the tables.
 
 ```JSON
 {
-  "success": true,
-  "cmd": "leaveTable",
-  "tables": {
-    "1": {
-      "id": 1,
-      "players": [ ],
-      "state": "waiting for players"
+  "success":true,
+  "cmd":"leaveTable",
+  "tables":{
+    "1":{
+      "id":1,
+      "players":{ },
+      "numPlayers":0,
+      "state":"waiting for players"
     }
   }
 }
@@ -245,31 +241,36 @@ Indicates players are in on the next hand and the amount they are betting.
 
 ```JSON
 {
-  "success": true,
-  "cmd": "bet",
-  "bet": 10,
-  "table": {
-    "id": 1,
-    "players": [
-      {
-        "name": "Edmond",
-        "bet": 10,
-        "hand": [
-          { "suit": "diamonds", "rank": "King", "value": 10 },
-          { "suit": "spades", "rank": "3", "value": 3 }
+  "success":true,
+  "cmd":"bet",
+  "bet":10,
+  "hand":[
+    { "suit":"spades", "rank":"Queen", "value":10 },
+    { "suit":"spades", "rank":"2", "value":2 }
+  ],
+  "table":{
+    "id":1,
+    "players":{
+      "1":{
+        "name":"Edmond",
+        "bet":10,
+        "hand":[
+          { "suit":"spades", "rank":"Queen", "value":10 },
+          { "suit":"spades", "rank":"2", "value":2 }
         ],
-        "done": false,
-        "busted": false
+        "done":false,
+        "busted":false
       }
-    ],
-    "dealer": {
-      "name": "Dealer",
-      "hand": [
-        { "suit": "spades", "rank": "Queen", "value": 10 },
+    },
+    "dealer":{
+      "name":"Dealer",
+      "hand":[
+        { "suit":"hearts", "rank":"4", "value":4 },
         "face down card"
       ]
     },
-    "state": "dealing"
+    "numPlayers":1,
+    "state":"dealing"
   }
 }
 ```
@@ -308,48 +309,37 @@ exceeds 21, the player loses the hand.
 
 ```JSON
 {
-  "success": true,
-  "cmd": "hit",
-  "hand": [
-    {
-      "suit": "diamonds",
-      "rank": "7",
-      "value": 7
-    },
-    {
-      "suit": "clubs",
-      "rank": "5",
-      "value": 5
-    },
-    {
-      "suit": "clubs",
-      "rank": "8",
-      "value": 8
-    }
+  "success":true,
+  "cmd":"hit",
+  "hand":[
+    { "suit":"spades", "rank":"Queen", "value":10 },
+    { "suit":"spades", "rank":"2", "value":2 },
+    { "suit":"clubs", "rank":"2", "value":2 }
   ],
-  "table": {
-    "id": 1,
-    "players": [
-      {
-        "name": "Edmond",
-        "bet": 10,
-        "hand": [
-          { "suit": "diamonds", "rank": "7", "value": 7 },
-          { "suit": "clubs", "rank": "5", "value": 5 },
-          { "suit": "clubs", "rank": "8", "value": 8 }
+  "table":{
+    "id":1,
+    "players":{
+      "1":{
+        "name":"Edmond",
+        "bet":10,
+        "hand":[
+          { "suit":"spades", "rank":"Queen", "value":10 },
+          { "suit":"spades", "rank":"2", "value":2 },
+          { "suit":"clubs", "rank":"2", "value":2 }
         ],
-        "done": true,
-        "busted": true
+        "done":false,
+        "busted":false
       }
-    ],
-    "dealer": {
-      "name": "Dealer",
-      "hand": [
-        { "suit": "hearts", "rank": "7", "value": 7 },
+    },
+    "dealer":{
+      "name":"Dealer",
+      "hand":[
+        { "suit":"hearts", "rank":"4", "value":4 },
         "face down card"
       ]
     },
-    "state": "dealing"
+    "numPlayers":1,
+    "state":"dealing"
   }
 }
 ```
@@ -387,35 +377,33 @@ results are known.
 
 ```JSON
 {
-  "success": true,
-  "cmd": "stand",
-  "hand": [
-    { "suit": "clubs", "rank": "10", "value": 10 },
-    { "suit": "diamonds", "rank": "3", "value": 3 }
-  ],
-  "table": {
-    "id": 1,
-    "players": [
-      {
-        "name": "Edmond",
-        "bet": 10,
-        "hand": [
-          { "suit": "clubs", "rank": "10", "value": 10 },
-          { "suit": "diamonds", "rank": "3", "value": 3 }
-        ],
-        "done": true,
-        "busted": false
-      }
-    ],
-    "dealer": {
-      "name": "Dealer",
-      "hand": [
-        { "suit": "hearts", "rank": "Ace", "value": [ 1, 10 ] },
-        "face down card"
-      ]
-    },
-    "state": "dealing"
-  }
+   "success":true,
+   "cmd":"stand",
+   "hand":[
+
+   ],
+   "table":{
+      "id":1,
+      "players":{
+         "1":{
+            "name":"Edmond",
+            "bet":-1,
+            "hand":[
+            ],
+            "done":true,
+            "busted":false
+         }
+      },
+      "dealer":{
+         "name":"Dealer",
+         "hand":[ { "suit":"hearts", "rank":"4", "value":4 },
+            { "suit":"clubs", "rank":"4", "value":4 },
+            { "suit":"clubs", "rank":"Jack", "value":10 }
+         ]
+      },
+      "numPlayers":1,
+      "state":"betting"
+   }
 }
 ```
 
@@ -451,17 +439,6 @@ and point with one finger.
 
 **JSON Reponse**
 
-    {
-        "success": true,
-        "cmd": "doubledown",
-        "balance": 390,
-        "bet": 10,
-        "card": 2
-        "hand": [ 4, 16, 2 ]
-        "total": 18,
-        "h1Over21": false
-        "done": true
-    }
 
 * **balance** - player&#39;s currency balance minus the bet they just
   placed
@@ -492,17 +469,6 @@ there being no standard hand signal.
     { "playerId": 3 }
 
 **JSON Reponse**
-
-    {
-        "success": true,
-        "cmd": "surrender"
-        "balance": 390,
-        "bet": 10,
-        "hand": [ 4, 2 ]
-        "totaa"l: 6,
-        "h1Over21": false
-        "done": true
-    }
 
 * **balance** - the player&#39;s currency balance minus the bet they just
   placed
@@ -549,18 +515,6 @@ box; point with two fingers spread into a V formation.
 
 **JSON Reponse**
 
-    {
-        "success": true,
-        "cmd": "split",
-        "balance": 390,
-        "bet": [ 10, 10 ],
-        "hand": [ 9 ]
-        "hand2": [ 9 ]
-        "total": [ 9, 9]
-        "h1Over21": false
-        "h2Over21": false
-        "done": false
-    }
 
 * **balance** - player&#39;s currency balance minus the bet they just placed
 * **bet** - player&#39s current bet which is now an array, 1 bet for each hand
@@ -571,4 +525,33 @@ box; point with two fingers spread into a V formation.
 * **h1Over21** - True, if the player value is over 21 on hand1. If there is a
   hand2, there will also be a h2_over21
 * **done** - True if the player&#39;s interest in the hand is concluded
+
+## debug/credits
+Allows developers to set the amount of credits a player has to any value.
+
+**Request Format**
+
+* Method: POST`
+* URI path: `/debug/credits`
+
+**Request Body**
+
+```JSON
+{ "playerId": 3, "credits": 999 }
+```
+
+## debug/getPlayer
+Allows developers to get the player information. It uses a POST because I was
+too pressed for time to expand json-rest-api to handle query strings. 
+
+**Request Format**
+
+* Method: POST`
+* URI path: `/debug/getPlayer`
+
+**Request Body**
+
+```JSON
+{ "playerId": 3 }
+```
 
