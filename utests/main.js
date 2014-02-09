@@ -4,7 +4,6 @@
 'use strict';
 var async = require('async');
 var Player = require('./player');
-var path = require('path');
 
 var players;
 
@@ -21,13 +20,14 @@ function userTest(player, cb) {
 }
 
 function runUserTests(cb) {
-    async.eachSeries(players, userTest, function(err) {
+    async.each(players, userTest, function(err) {
         if (err) {
             logger.error('runUserTests %s',err.message);
             logger.error('runUserTests %s',err.stack);
         }
         // needed to work around a bug in node/async
-        setTimeout(cb, 1);
+        //setTimeout(cb, 1);
+        cb();
     });
 }
 
@@ -47,6 +47,14 @@ function testLoop() {
         }
     );
 }
+
+/*
+function logPlayersIn(players) {
+    async.each(players,
+        function(player, cb) {
+        }
+}
+*/
 
 function main() {
     // create a logger
@@ -69,39 +77,10 @@ function main() {
 
     // create a player
     players = [
-        new Player(1,1,1),
+        new Player(-1,1,1),
     ];
+    // log players in
     testLoop();
 }
 
-function startServer() {
-    var targetDir = path.join(__dirname, '..');
-    console.log('dir',targetDir);
-    var spawn = require('child_process').spawn;
-    var opts = {
-        env: process.env,
-        cwd: targetDir,
-    };
-    var server = spawn('./bin/server.js', [], opts);
-    server.on('error', function(err) {
-        console.error('server error: %s',err.message);
-        console.error('server error: stack: ',err.stack);
-        process.exit(0);
-    });
-    server.on('close', function (code, signal) {
-        if (code)
-            console.error('server process exited with code ' + code);
-        if (signal)
-            console.error('server process exited with signal ' + signal);
-        process.exit(0);
-    });
-}
-
-// run the game server
-startServer();
-
-// HACK: start after a delay - don't want to build spawn messaging
-setTimeout(function() {
-    main();
-}, 3000);
-
+main();

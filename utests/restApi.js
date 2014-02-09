@@ -9,7 +9,7 @@ function login(body, cb) {
 }
 
 // view Tables
-function viewTables(body, cb) {
+function viewTables(cb) {
     cmd('viewTables', 'GET', true, cb);
 }
 
@@ -34,16 +34,20 @@ function stand(body, cb) {
 }
 
 function debugCredits(body, cb) {
-    cmd('debug/credits', 'POST', body, cb);
+    cmd('debugCredits', 'POST', body, cb);
 }
 
 function debugGetPlayer(body, cb) {
-    cmd('debug/getPlayer', 'GET', body, cb);
+    cmd('debugGetPlayer', 'POST', body, cb);
+}
+
+function debugGameState(body, cb) {
+    cmd('debugGameState', 'POST', body, cb);
 }
 
 function cmd(apiCmd, method, body, cb) {
     request({method:method, json:body, uri: URL+'/'+apiCmd},
-     function(err, res, json) {
+    function(err, res, json) {
         if (err) {
             logger.error('%s: %j', apiCmd, json);
             return cb(err);
@@ -63,5 +67,6 @@ module.exports = {
     hit: hit,
     stand: stand,
     debugCredits: debugCredits,
-    debugGetPlayer: debugGetPlayer
+    debugGetPlayer: debugGetPlayer,
+    debugGameState: debugGameState
 };
