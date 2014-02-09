@@ -64,7 +64,20 @@ game.
 
 **JSON Response**
 
-    { "playerid": 3 }
+```JSON
+{
+  "success": true,
+  "cmd": "login",
+  "playerId": 1,
+  "tables": {
+    "1": {
+      "id": 1,
+      "players": [ ],
+      "state": "waiting for players"
+    }
+  }
+}
+```
 
 * **id** - player id, a positive integer, to be re-used for all subsequent
   requests
@@ -79,20 +92,27 @@ Allows players to see the tables and who is at each table.
 
 **JSON Response**
 
-    {
-        "success": true,
-        "cmd": "viewTables",
-        "tables": {
-            "1": {
-                "players": { "Edmond", "Robert" },
-                "state": "betting"
-            },
-            "2": {
-                "players": { "James" },
-                "state": "dealing"
-            }
+```JSON
+{
+  "success": true,
+  "cmd": "viewTables",
+  "tables": {
+    "1": {
+      "id": 1,
+      "players": [
+        {
+          "name": "Edmond",
+          "bet": -1,
+          "hand": [ ],
+          "done": false,
+          "busted": false
         }
+      ],
+      "state": "betting"
     }
+  }
+}
+```
 
 * **tables** - an arary of all the tables where the key is the table id and the
     data describes the table
@@ -113,20 +133,40 @@ scale.
 
 **JSON Request Body**
 
-    { "playerid": 3 }
+```JSON
+{ "playerid": 3 }
+```
 
 * **id** - the player id received on login
 
 **JSON Response**
 
-    { "success": true, "cmd": "joinTab;e", "interval": 1000, "balance": 400 }
-
+```JSON
+{
+  "success": true,
+  "cmd": "joinTable",
+  "table": {
+    "id": 1,
+    "players": [
+      {
+        "name": "Edmond",
+        "bet": -1,
+        "hand": [ ],
+        "done": false,
+        "busted": false
+      }
+    ],
+    "state": "betting"
+  }
+}
+```
 * **interval** - time to check for next hand of dealt cards in milliseconds
 * **balance** - player&#39;s winnings (or losses)
 
 ## leaveTable
 Allows the player to leave the table. If a hand is in play, the player will lose
-the bet to the house. The player returns to the lobby.
+the bet to the house. The player returns to the lobby and then receices
+information describing all the tables.
 
 **Request Format**
 
@@ -135,13 +175,27 @@ the bet to the house. The player returns to the lobby.
 
 **JSON Request Body**
 
-    { "playerid": 3 }
+```JSON
+{ "playerid": 3 }
+```
 
 * **id** - the player id received on login
 
 **JSON Response**
 
-    { "sucess": true, "cmd": "leaveTable", "interval": 1000, "balance": 400 }
+```JSON
+{
+  "success": true,
+  "cmd": "leaveTable",
+  "tables": {
+    "1": {
+      "id": 1,
+      "players": [ ],
+      "state": "waiting for players"
+    }
+  }
+}
+```
 
 * **interval** - time to check for next hand of dealt cards in milliseconds
 * **balance** - player&#39;s winnings (or losses)
@@ -156,12 +210,15 @@ Allows players to drop out of the game.
 
 **JSON Request Body**
 
-    { "playerId": 3 }
+```JSON
+{ "playerId": 3 }
+```
 
 * **id** - player id, a positive integer, to be re-used for all subsequent
   requests
 
 **JSON Response**
+
 
     { "success": true, "cmd": "quitGame", "balance": 4556 }
 
@@ -177,22 +234,45 @@ Indicates players are in on the next hand and the amount they are betting.
 
 **JSON Request Body**
 
-    { "playerId": 3, "bet": 10 }
+```JSON
+{ "playerId": 3, "bet": 10 }
+```
 
 * **id** - player id received when joining the game
 * **bet** - amount of currency to bet on the next hand
 
 **JSON Response**
 
-    {
-        "success": true,
-        "cmd": "bet",
-        "balance": 390,
-        "hand": [ 4, 7 ],
-        "total": 12,
-        "h1Over21": false,
-        "done": false
-    }
+```JSON
+{
+  "success": true,
+  "cmd": "bet",
+  "bet": 10,
+  "table": {
+    "id": 1,
+    "players": [
+      {
+        "name": "Edmond",
+        "bet": 10,
+        "hand": [
+          { "suit": "diamonds", "rank": "King", "value": 10 },
+          { "suit": "spades", "rank": "3", "value": 3 }
+        ],
+        "done": false,
+        "busted": false
+      }
+    ],
+    "dealer": {
+      "name": "Dealer",
+      "hand": [
+        { "suit": "spades", "rank": "Queen", "value": 10 },
+        "face down card"
+      ]
+    },
+    "state": "dealing"
+  }
+}
+```
 
 * **balance** - player&#39;s currency balance minus the bet they just placed
 * **hand** - cards in the player&#39s hand. By index position in a deck. If
@@ -214,7 +294,9 @@ exceeds 21, the player loses the hand.
 
 **JSON Request Body**
 
-    { "playerId": 3, hand: 3 }
+```JSON
+{ "playerId": 3, hand: 3 }
+```
 
 * **id** - player id given when the player joins the game
 * **hand** - hand, upon which, to hit:
@@ -224,16 +306,53 @@ exceeds 21, the player loses the hand.
 
 **JSON Reponse**
 
+```JSON
+{
+  "success": true,
+  "cmd": "hit",
+  "hand": [
     {
-        "success": true,
-        "cmd": "hit",
-        "balance": 390,
-        "card": 47,
-        "hand": [ 4, 16, 2, 47 ]
-        "total": 18,
-        "h1Over21": false,
-        "done": false
+      "suit": "diamonds",
+      "rank": "7",
+      "value": 7
+    },
+    {
+      "suit": "clubs",
+      "rank": "5",
+      "value": 5
+    },
+    {
+      "suit": "clubs",
+      "rank": "8",
+      "value": 8
     }
+  ],
+  "table": {
+    "id": 1,
+    "players": [
+      {
+        "name": "Edmond",
+        "bet": 10,
+        "hand": [
+          { "suit": "diamonds", "rank": "7", "value": 7 },
+          { "suit": "clubs", "rank": "5", "value": 5 },
+          { "suit": "clubs", "rank": "8", "value": 8 }
+        ],
+        "done": true,
+        "busted": true
+      }
+    ],
+    "dealer": {
+      "name": "Dealer",
+      "hand": [
+        { "suit": "hearts", "rank": "7", "value": 7 },
+        "face down card"
+      ]
+    },
+    "state": "dealing"
+  }
+}
+```
 
 * **balance** - player&#39;s currency balance minus the bet they just placed.
 * **hand** - cards in the player&#39s hand. By index position in a deck. If
@@ -266,15 +385,39 @@ results are known.
 
 **JSON Reponse:**
 
-    {
-        "success": true,
-        "cmd": "stand",
-        "balance": 390,
-        "hand": [ 4, 16, 2 ]
-        "total": 18,
-        "h1Over21": false
-        "done": true
-    }
+```JSON
+{
+  "success": true,
+  "cmd": "stand",
+  "hand": [
+    { "suit": "clubs", "rank": "10", "value": 10 },
+    { "suit": "diamonds", "rank": "3", "value": 3 }
+  ],
+  "table": {
+    "id": 1,
+    "players": [
+      {
+        "name": "Edmond",
+        "bet": 10,
+        "hand": [
+          { "suit": "clubs", "rank": "10", "value": 10 },
+          { "suit": "diamonds", "rank": "3", "value": 3 }
+        ],
+        "done": true,
+        "busted": false
+      }
+    ],
+    "dealer": {
+      "name": "Dealer",
+      "hand": [
+        { "suit": "hearts", "rank": "Ace", "value": [ 1, 10 ] },
+        "face down card"
+      ]
+    },
+    "state": "dealing"
+  }
+}
+```
 
 * **balance** - the player&#39;s currency balance minus the bet they just
   placed
