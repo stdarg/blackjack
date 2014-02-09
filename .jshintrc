@@ -38,6 +38,7 @@
     "globals" : {
         "describe"  : true,
         "it"        : true,
-        "logger"    : true
+        "logger"    : true,
+        "printf"    : true
     }
 }
