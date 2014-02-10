@@ -9,8 +9,7 @@ global.logger = new Log({
     file:  './client.log',
     fileFlags: 'w',             // Flags used in fs.createWriteStream to
                                 //   create log file
-    consoleLogging: true,       // Flag to direct output to console
-    colorConsoleLogging: true,  // Flag to color output to console
+    consoleLogging: false,       // Flag to direct output to console
 
     // Usage of the log4js layout
     logMessagePattern: '[%d{ISO8601}] [%p] %c - %m{1}'
