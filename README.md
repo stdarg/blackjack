@@ -12,9 +12,9 @@ Requirements
     * bet
     * hit
     * stand
-    * double down
-    * surrender
-    * split
+    * double down (not implemented)
+    * surrender (not implemented)
+    * split (not implemented)
 * After a player&#39;s final action in a hand, they should learn the outcome
 * Use a typical dealer strategy of standing on 17 or greater
 * Support multiple players
@@ -26,9 +26,9 @@ Requirements
 Stretch goals
 
 * Character-based Node.js client
-* Discovery between client and server using UDP broadcast
 * Test framework with multiple concurrent clients that do set actions and random
   actions
+* Discovery between client and server using UDP broadcast
 * Chat functionality for players
 * Player persistance for score (winnings)
 
@@ -368,7 +368,8 @@ results are known.
     { "playerId": 3, "hand": 1 }
 
 * **id** - The player id given when the player joins the game
-* **hand** - The hand upon which, to stand:
+* **hand** - Optional. If not present, 1 is the default. The hand upon which, to
+  stand:
     * 1 - for default, if not specified, 1 is assumed
     * 2 - stand on the second hand only
     * 3 - stand on both hands
