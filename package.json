@@ -4,8 +4,8 @@
   "description": "A simple blackjack server with client.",
   "main": "index.js",
   "bin": {
-    "blackjack_server": "./bin/blackjack_server.js",
-    "blackjack": "./bin/bjack_client.js"
+    "blackjack_server": "./bin/server.js",
+    "blackjack": "./bin/client.js"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter list"
