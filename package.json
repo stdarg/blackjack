@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "async": "0.2.10",
+    "config-js": "0.0.7",
     "debug": "0.7.4",
     "fuzelog": "1.4.7",
     "have": "0.2.3",
@@ -31,6 +32,7 @@
     "prompt": "0.2.12",
     "request": "2.33.0",
     "sprintf.js": "0.1.4",
+    "tcp-port-used": "0.1.2",
     "udp-discovery": "0.0.3"
   },
   "devDependencies": {

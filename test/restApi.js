@@ -1,116 +1,186 @@
+/**
+ * Unit tests for the rest api.
+ */
+
 'use strict';
-var request = require('request');
-//var debug = require('debug')('bj:restApi');
 var assert = require('assert');
-var async = require('async');
 var is = require('is2');
+var restApi = require('../lib/clientRestCalls');
+var tcpPortUsed = require('tcp-port-used');
+
+// ../lib/clientRestCalls uses the config, so make one
+var Config = require('config-js').Config;
+var path = require('path');
+var logPath = path.join(__dirname, '..', 'conf', 'config.js');
+global.config = new Config(logPath);
+
+// ../lib/clientRestCalls uses the logger, so make a fake one for it
+if (!global.logger) {
+    global.logger = {
+        debug: function() {},
+        error: function() {},
+        info: function() {},
+        warn: function() {}
+    };
+}
 
 var playerId;
 var tables;
 
-async.series([
-        login,
-        viewTables,
-        joinTable,
-        leaveTable,
-        joinTable,
-        bet,
-        hit,
-        stand
-    ],
+// ensure the server is running
+tcpPortUsed.check(4201, '127.0.0.1')
+    .then(function(inUse) {
+        if (!inUse) {
+            console.error('The server needs to be running to test the '+
+                        'rest api\n');
+            return;
+        }
+        doRestTests();
+    },
     function(err) {
-        if (err)
-            console.log('Error',err);
-        else
-            console.log('Success.');
+        console.error('Error on check:', err.message);
     }
 );
 
-// login
-function login(cb) {
-    var data = { playerName: 'Edmond' };
+function doRestTests() {
+    describe('REST API', function() {
 
-    request({method:'POST', json:data, uri: 'http://localhost:4201/login'},
-    function(err, res, json) {
-        if (err)
-            return cb(err);
-        console.log('login',JSON.stringify(json));
-        playerId = json.playerId;
-        assert.ok(json.success === true);
-        assert.ok(is.positiveInt(json.playerId));
-        cb();
-    });
-}
+        it('login should return a player id', function(done) {
+            var body = { playerName: 'Edmond' };
+            restApi.login(body, function(err, json) {
+                if (err)
+                    return done(err);
+                //console.log('login',JSON.stringify(json));
+                playerId = json.playerId;
+                assert.ok(json.success === true);
+                assert.ok(is.positiveInt(json.playerId));
+                done();
+            });
+        });
 
-// view Tables
-function viewTables(cb) {
-    request({method:'GET', json:true, uri: 'http://localhost:4201/viewTables'},
-    function(err, res, json) {
-        if (err)
-            return cb(err);
-        console.log('viewTables',JSON.stringify(json));
-        assert.ok(json.success === true);
-        tables = json.tables;
-        assert.ok(is.nonEmptyObj(tables));
-        cb();
-    });
-}
+        it('viewTables should return all the available tables', function(done) {
+            restApi.viewTables(function(err, json) {
+                if (err)
+                    return done(err);
+                //console.log('viewTables',JSON.stringify(json));
+                assert.ok(json.success === true);
+                tables = json.tables;
+                assert.ok(is.nonEmptyObj(tables));
+                assert.ok(Object.keys(json.tables).length > 1);
+                done();
+            });
+        });
 
-function joinTable(cb) {
-    var data = { playerId: playerId, tableId: 1 };
-    request({method:'POST', json:data, uri: 'http://localhost:4201/joinTable'},
-    function(err, res, json) {
-        if (err)
-            return cb(err);
-        console.log('joinTable',JSON.stringify(json));
-        assert.ok(json.success === true);
-        cb();
-    });
-}
+        it('joinTable should place a user at a table', function(done) {
+            var body = { playerId: playerId, tableId: 1 };
+            restApi.joinTable(body, function(err, json) {
+                if (err)
+                    return done(err);
+                //console.log('joinTable',JSON.stringify(json));
+                assert.ok(json.success === true);
+                assert.ok(is.obj(json.player));
+                assert.ok(is.obj(json.table));
+                assert.ok(json.player.tableId === 1);
+                done();
+            });
+        });
 
-function leaveTable(cb) {
-    var data = { playerId: playerId };
-    request({method:'POST', json:data, uri: 'http://localhost:4201/leaveTable'},
-    function(err, res, json) {
-        if (err)
-            return cb(err);
-        console.log('leaveTable',JSON.stringify(json));
-        assert.ok(json.success === true);
-        cb();
-    });
-}
+        it('leaveTable should place a user in the lobby', function(done) {
+            var body = { playerId: playerId };
+            restApi.leaveTable(body, function(err, json) {
+                if (err)
+                    return done(err);
+                //console.log('leaveTable',JSON.stringify(json));
+                assert.ok(json.success === true);
+                assert.ok(is.obj(json.tables));
+                assert.ok(json.player.tableId === -1);
+                done();
+            });
+        });
 
-function bet(cb) {
-    var data = { playerId: playerId, bet: 10 };
-    request({method:'POST', json:data, uri: 'http://localhost:4201/bet'},
-    function(err, res, json) {
-        if (err)
-            return cb(err);
-        console.log('bet',JSON.stringify(json));
-        assert.ok(json.success === true);
-        cb();
-    });
-}
+        it('joinTable should place a user back at a table', function(done) {
+            var body = { playerId: playerId, tableId: 2 };
+            restApi.joinTable(body, function(err, json) {
+                if (err)
+                    return done(err);
+                //console.log('joinTable',JSON.stringify(json));
+                assert.ok(json.success === true);
+                assert.ok(is.obj(json.table));
+                assert.ok(json.player.tableId === 2);
+                done();
+            });
+        });
 
-function hit(cb) {
-    var data = { playerId: playerId, hand: 1 };
-    request({method:'POST', json:data, uri: 'http://localhost:4201/hit'},
-     function(err, res, json) {
-        if (err)
-            return cb(err);
-        console.log('hit',JSON.stringify(json));
-        cb();
-    });
-}
+        it('bet should cause a hand to be dealt', function(done) {
+            var body = { playerId: playerId, bet: 10 };
+            restApi.bet(body, function(err, json) {
+                if (err)
+                    return done(err);
+                //console.log('bet',JSON.stringify(json));
+                assert.ok(json.success === true);
+                assert.ok(json.player.bet === 10);
+                done();
+            });
+        });
 
-function stand(cb) {
-    var data = { playerId: playerId, hand: 1 };
-    request({method:'POST', json:data, uri: 'http://localhost:4201/stand'},
-     function(err, res, json) {
-        if (err)
-            return cb(err);
-        console.log('stand',JSON.stringify(json));
-        assert.ok(json.success === true);
-        cb();
+        it('hit should get the player another card', function(done) {
+            var body = { playerId: playerId, hand: 1 };
+            restApi.hit(body, function(err, json) {
+                if (err)
+                    return done(err);
+                assert.ok(json.player.hand.length === 3);
+                done();
+            });
+        });
+
+        it('leaveTable should place a user in the lobby (again)',
+        function(done) {
+            var body = { playerId: playerId };
+            restApi.leaveTable(body, function(err, json) {
+                if (err)
+                    return done(err);
+                //console.log('leaveTable',JSON.stringify(json));
+                assert.ok(json.success === true);
+                assert.ok(json.player.tableId === -1);
+                done();
+            });
+        });
+
+        it('joinTable should place a user at a different table',
+        function(done) {
+            var body = { playerId: playerId, tableId: 3 };
+            restApi.joinTable(body, function(err, json) {
+                if (err)
+                    return done(err);
+                //console.log('joinTable',JSON.stringify(json));
+                assert.ok(json.success === true);
+                assert.ok(json.player.tableId === 3);
+                done();
+            });
+        });
+
+        it('bet should cause a hand to be dealt', function(done) {
+            var body = { playerId: playerId, bet: 10 };
+            restApi.bet(body, function(err, json) {
+                if (err)
+                    return done(err);
+                //console.log('bet',JSON.stringify(json));
+                assert.ok(json.success === true);
+                assert.ok(json.player.hand.length === 2);
+                done();
+            });
+        });
+
+        it('stand should end the hand for the player', function(done) {
+            var body = { playerId: playerId, hand: 1 };
+            restApi.stand(body, function(err, json) {
+                if (err)
+                    return done(err);
+                //console.log('stand',JSON.stringify(json));
+                assert.ok(json.success === true);
+                assert.ok(is.obj(json.player.result));
+                done();
+            });
+        });
     });
 }

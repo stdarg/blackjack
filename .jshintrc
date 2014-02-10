@@ -36,6 +36,7 @@
     "white"         : false,
 
     "globals" : {
+        "config"    : true,
         "describe"  : true,
         "it"        : true,
         "logger"    : true,

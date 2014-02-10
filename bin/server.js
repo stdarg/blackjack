@@ -1,7 +1,12 @@
 #!/usr/bin/env node
-// create the global logger
+
 var Log = require('fuzelog');
-global.logger = new Log({
+var Config = require('config-js').Config;
+var path = require('path');
+var logPath = path.join(__dirname, '..', 'conf', 'config.js');
+global.config = new Config(logPath);
+
+var defaultOpts = {
     level: 'debug',
     name: 'blackjack_server',  // Category name, shows as %c in pattern
 
@@ -14,7 +19,11 @@ global.logger = new Log({
 
     // Usage of the log4js layout
     logMessagePattern: '[%d{ISO8601}] [%p] %c - %m{1}'
-});
+};
+
+// get logging setup from config
+var opts = config.get('server.logging', defaultOpts);
+global.logger = new Log(opts);
 
 // start the rest api
 require('../lib/restApi');
