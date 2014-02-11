@@ -79,10 +79,14 @@ function main() {
     var opts = config.get('utests.logging', defaultOpts);
     global.logger = new Log(opts);
 
-    // create a player
+    // create a player, with a behavior
     players = [
         new Player(1),
-        //new Player(2),
+        new Player(2),
+        new Player(1),
+        new Player(2),
+        new Player(1),
+        new Player(2)
     ];
 
     // log all the players into the game
