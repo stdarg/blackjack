@@ -5,8 +5,17 @@
 var async = require('async');
 var Player = require('./player');
 
-var players;
+// create global config object
+var Config = require('config-js').Config;
+var path = require('path');
+var logPath = path.join(__dirname, '..', 'conf', 'config.js');
+global.config = new Config(logPath);
 
+var players;    // an array of all the simulated players
+
+/**
+ *
+ */
 function userTest(player, cb) {
     logger.info('userTest for %s',player.name);
     player.act(function(err) {
@@ -14,23 +23,27 @@ function userTest(player, cb) {
             logger.error('usertest %s',err.message);
             logger.error('usertest %s',err.stack);
         }
-        logger.info('completed userTest for %s',player.name);
+        //logger.info('completed userTest for %s',player.name);
         cb(err);
     });
 }
 
+/**
+ *
+ */
 function runUserTests(cb) {
     async.each(players, userTest, function(err) {
         if (err) {
             logger.error('runUserTests %s',err.message);
             logger.error('runUserTests %s',err.stack);
         }
-        // needed to work around a bug in node/async
-        //setTimeout(cb, 1);
         cb();
     });
 }
 
+/**
+ *
+ */
 function testLoop() {
     async.whilst(
         // synch truth test to perform before each execution of runUserTests
@@ -48,39 +61,53 @@ function testLoop() {
     );
 }
 
-/*
-function logPlayersIn(players) {
-    async.each(players,
-        function(player, cb) {
-        }
-}
-*/
-
+/**
+ *
+ */
 function main() {
     // create a logger
     var Log = require('fuzelog');
-    global.logger = new Log({
+    var defaultOpts = {
         level: 'debug',
         name: 'utests',            // Category name, shows as %c in pattern
-
-        // FileStream to log to (can be file name or a stream)
         file: __dirname + '/utests.log',
-
-        fileFlags: 'w',             // Flags used in fs.createWriteStream to
-                                    //   create log file
+        fileFlags: 'w',             // Flags used in fs.createWriteStream
         consoleLogging: true,       // Flag to direct output to console
         colorConsoleLogging: true,  // Flag to color output to console
-
-        // Usage of the log4js layout
         logMessagePattern: '[%d{ISO8601}] [%p] %c - %m{1}'
-    });
+    };
+    var opts = config.get('utests.logging', defaultOpts);
+    global.logger = new Log(opts);
 
     // create a player
     players = [
-        new Player(-1,1,1),
+        new Player(1),
+        //new Player(2),
     ];
-    // log players in
-    testLoop();
+
+    // log all the players into the game
+    var tableId = 1;
+    async.each(players,
+        function logIn(player, cb) {
+            player.loginJoinTable(tableId++, function(err) {
+                if (err) {
+                    logger.debug('%s error on login: %s', player.name,
+                                 err.message);
+                } else {
+                    logger.debug('%s logged in.', player.name);
+                }
+                cb(err);
+            });
+        },
+        function end(err) {
+            if (err) {
+                logger.error('logIn %s',err.message);
+                logger.error('logIn %s',err.stack);
+                return;
+            }
+            testLoop();
+        }
+    );
 }
 
-main();
+main();         // program execution starts here.
