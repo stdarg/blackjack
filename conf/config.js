@@ -14,7 +14,7 @@ module.exports = {
 
     client : {
         logging : {
-            level: 'error',             // Logging level
+            level: 'debug',             // Logging level
             name: 'blackjack_client',   // Category name, shows as %c in pattern
             file:  './client.log',      // log file path
             fileFlags: 'w',             // Flags used in fs.createWriteStream 
@@ -39,7 +39,7 @@ module.exports = {
 
     utests : {
         logging : {
-            level: 'error',             // Logging level
+            level: 'debug',             // Logging level
             name: 'utests',             // Category name, shows as %c in pattern
             file:  './utest.log',       // Log file path
             fileFlags: 'w',             // Flags used in fs.createWriteStream to
