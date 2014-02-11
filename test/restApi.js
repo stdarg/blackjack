@@ -7,12 +7,15 @@ var assert = require('assert');
 var is = require('is2');
 var restApi = require('../lib/clientRestCalls');
 var tcpPortUsed = require('tcp-port-used');
+var randomName = require('names');
 
 // ../lib/clientRestCalls uses the config, so make one
-var Config = require('config-js').Config;
-var path = require('path');
-var logPath = path.join(__dirname, '..', 'conf', 'config.js');
-global.config = new Config(logPath);
+//var Config = require('config-js').Config;
+//var path = require('path');
+//var logPath = path.join(__dirname, '..', 'conf', 'config.js');
+//global.config = new Config(logPath);
+
+//console.log('\nPORT: %s',config.get('port',6666));
 
 // ../lib/clientRestCalls uses the logger, so make a fake one for it
 if (!global.logger) {
@@ -44,9 +47,9 @@ tcpPortUsed.check(4201, '127.0.0.1')
 
 function doRestTests() {
     describe('REST API', function() {
-
+        var name = randomName();
         it('login should return a player id', function(done) {
-            var body = { playerName: 'Edmond' };
+            var body = { playerName: name };
             restApi.login(body, function(err, json) {
                 if (err)
                     return done(err);
@@ -116,7 +119,9 @@ function doRestTests() {
             restApi.bet(body, function(err, json) {
                 if (err)
                     return done(err);
-                //console.log('bet',JSON.stringify(json));
+                //console.log('\nbet',JSON.stringify(json));
+                //var inspect = require('util').inspect;
+                //console.log('\nbet', inspect(json, {depth:null,colors:true}));
                 assert.ok(json.success === true);
                 assert.ok(json.player.bet === 10);
                 done();
@@ -128,7 +133,13 @@ function doRestTests() {
             restApi.hit(body, function(err, json) {
                 if (err)
                     return done(err);
-                assert.ok(json.player.hand.length === 3);
+                //console.log('json.player',json.player);
+                if (json.table.state === 'betting') {
+                    var p = json.player.result.players[playerId];
+                    assert.ok(p.hand.length === 3);
+                } else {
+                    assert.ok(json.player.hand.length === 3);
+                }
                 done();
             });
         });
@@ -166,6 +177,8 @@ function doRestTests() {
                     return done(err);
                 //console.log('bet',JSON.stringify(json));
                 assert.ok(json.success === true);
+                //console.log('\nBET player: ',json.player);
+                //console.log('\nBET table: ',json.table);
                 assert.ok(json.player.hand.length === 2);
                 done();
             });
@@ -179,6 +192,19 @@ function doRestTests() {
                 //console.log('stand',JSON.stringify(json));
                 assert.ok(json.success === true);
                 assert.ok(is.obj(json.player.result));
+                done();
+            });
+        });
+
+        it('leaveTable should place a user in the lobby (again)',
+        function(done) {
+            var body = { playerId: playerId };
+            restApi.leaveTable(body, function(err, json) {
+                if (err)
+                    return done(err);
+                //console.log('leaveTable',JSON.stringify(json));
+                assert.ok(json.success === true);
+                assert.ok(json.player.tableId === -1);
                 done();
             });
         });
