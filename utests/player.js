@@ -8,195 +8,36 @@ module.exports = Player;
 var async = require('async');
 var randomName = require('names');
 var is = require('is2');
-var restApi = require('./restApi');
+//var restApi = require('./restApi');
+var restApi = require('../lib/clientRestCalls');
 var assert = require('assert');
 var _ = require('lodash');
 var MersenneTwister = require('mersenne-twister');
+
 // MersenneTwister uses Date().getTime() as a default seed
 var generator = new MersenneTwister();
 
-var PREPLAY = 0;
-var PLAY = 1;
-var POSTPLAY = 2;
-
 /**
- *
+ * Player constructor
+ * @constructor
+ * @param {Number} behavior An integer identifying the behavior pattern.
  */
-function Player(pre, play, post) {
+function Player(behaviorId) {
     var self = this;
     self.name = randomName();
-    self.next = 0;
-    self.pre = pre;
-    self.play = play;
-    self.post = post;
+    assert.ok(is.nonEmptyStr(self.name));
+    self.behaviorId = behaviorId;
+    assert.ok(is.int(self.behaviorId));
     self.loggedIn = false;
     self.tableId = -1;
 }
 
 /**
- *
+ * login and join a table picked at random.
+ * @param {Number} table Table id of table to join.
+ * @param {Function} cb Callback of form fn(err) where err is an Error object.
  */
-Player.prototype.act = function(cb) {
-    var self = this;
-    async.series([
-            self.actPart1.bind(self),
-            self.actPart2.bind(self)
-        ],
-        function(err) {
-            if (err)
-                logger.error('act: %s', err.message);
-            cb(err);
-        }
-    );
-};
-
-Player.prototype.actPart1 = function(cb) {
-    var self = this;
-    async.series([
-        function(cb) {
-            if (self.loggedIn)
-                return cb();
-            self.loginJoinTable(function(err) {
-                return cb(err);
-            });
-        },
-        function(cb) {
-            self.debugGameState(true, function(err) {
-                if (err)
-                    logger.error('actPart1: %s', err.message);
-                cb(err);
-            });
-        }
-    ],
-    function(err) {
-        cb(err);
-    });
-};
-
-Player.prototype.actPart2 = function(cb) {
-    var self = this;
-    switch(self.next) {
-        case PREPLAY:
-            self.next = PLAY;
-            self.prePlayBehavior(cb);
-            break;
-        case PLAY:
-            self.playBehavior(cb);
-            //logger.info('act self: %j', self);
-            if (self.player && self.player.done)
-                self.next = POSTPLAY;
-            break;
-        case POSTPLAY:
-            self.next = PREPLAY;
-            self.postPlayBehavior(cb);
-            break;
-        default:
-            assert.ok(false);
-            break;
-    }
-};
-
-/**
- *
- */
-Player.prototype.prePlayBehavior = function(cb) {
-    var self = this;
-    if (self.pre < 0) {
-        if (self.loggedIn) {
-            return cb();
-        }
-        self.loginJoinTable(function(err) {
-            return cb(err);
-        });
-        return;
-    }
-    logger.info('%s doing pre-play behavior',self.name);
-    // randomly select behavior if num is udef
-    switch (self.pre) {
-        case 1:
-            self.login(true, function(err, json) {
-                if (err) {
-                    logger.error('login: %s json: %j',err.message, json);
-                    return;
-                }
-            });
-            break;
-    }
-    cb();
-};
-
-/**
- *
- */
-Player.prototype.playBehavior = function(cb) {
-    var self = this;
-    if (self.play < 0)
-        return cb();
-
-    logger.info('%s doing play behavior',self.name);
-
-    if (!self.player || !self.player.tableId ||  self.player.tableId === -1) {
-        logger.error('Attempt to play when not at a table.');
-        self.next = POSTPLAY;
-        return cb();
-    }
-
-    logger.error('self.table.state: %s', self.table.state);
-    if (self.table.state === 'betting') {
-        logger.warn('BETTING');
-        self.bet(1, true, function(err) {
-            cb(err);
-        });
-        return;
-    } else {
-        logger.warn('NOT betting');
-    }
-
-    // randomly select behavior if num is udef
-    switch (self.play) {
-    case 1:
-        logger.debug('hit me!');
-        self.hit(true, function(err, json) {
-            if (err) {
-                logger.error('%s', err.message);
-                return cb(err);
-            }
-            logger.error('hit %j', json);
-            cb(null, json);
-        });
-        break;
-    case 2:
-        logger.debug('stand!');
-        self.stand(true, function(err, json) {
-            if (err) {
-                logger.error('%s', err.message);
-                return cb(err);
-            }
-            logger.error('stand %j', json);
-            cb(null, json);
-        });
-        break;
-    default:
-        assert.ok(false);
-        break;
-    }
-};
-
-/**
- *
- */
-Player.prototype.postPlayBehavior = function(cb) {
-    var self = this;
-    if (self.play < 0)
-        return cb();
-    logger.info('%s doing post-play behavior',self.name);
-    // randomly select behavior if num is udef
-    cb();
-};
-
-////
-
-Player.prototype.loginJoinTable = function(cb) {
+Player.prototype.loginJoinTable = function(table, cb) {
     var self = this;
     var body = {playerName: self.name};
     logger.debug('loginJoinTable');
@@ -206,32 +47,192 @@ Player.prototype.loginJoinTable = function(cb) {
             logger.error('login: %s json: %j',err.message, json);
             return cb(err);
         }
+        self.loggedIn = true;
         assert.ok(is.nonEmptyObj(json.player));
         assert.ok(is.int(json.player.tableId));
         assert.ok(is.nonEmptyObj(json.tables));
+        self.tables = json.tables;
 
         if (json.player.tableId > 0)
-            return cb(null, json);
+            return cb();
 
-        var keys = _.keys(json.tables);
-        logger.debug('keys %j', keys);
-        var target = keys[Math.floor((generator.random()*keys.length))];
-        logger.debug('tables: %j', json.tables);
-        logger.debug('target: %j', target);
-        logger.debug('json.tables[target]: %j', json.tables[target]);
-        var tableId = json.tables[target].id;
-        assert.ok(is.positiveInt(tableId));
+        var tableId = table;
+        if (!is.positiveInt(table) || table < 1) {
+            var keys = _.keys(json.tables);
+            var target = keys[Math.floor((generator.random()*keys.length))];
+            tableId = json.tables[target].id;
+            assert.ok(is.positiveInt(tableId));
+        }
+
         self.joinTable(tableId, true, function(err, json) {
             if (err) {
                 logger.error('%s', err.message);
                 return cb(err);
             }
             assert.ok(is.positiveInt(json.table.id));
-            cb(null,json);
+            assert.ok(is.positiveInt(json.player.tableId));
+            self.tableId = json.player.tableId;
+            logger.debug('%s joined table %d', self.name, self.tableId);
+            cb();
         });
     });
 };
 
+/**
+ * Causes the player to take the next appropriate action give its game state
+ * @param {Function} cb Callback of form fn(err) where err is an Error object.
+ */
+Player.prototype.act = function(cb) {
+    var self = this;
+    async.series([
+            // Bind is to enable calling of methods on this object.
+            self.setupForAction.bind(self),
+            self.doBehavior.bind(self)
+        ],
+        function(err) {
+            if (err)
+                logger.error('act: %s', err.message);
+            cb(err);
+        }
+    );
+};
+
+/**
+ * Before the player acts, we get the game state, so we know what to do.
+ * @param {Function} cb Callback of form fn(err) where err is an Error object.
+ */
+Player.prototype.setupForAction = function(cb) {
+    var self = this;
+    async.series([
+        function(cb) {                        // get the current game state
+            self.debugGameState(true, function(err) {
+                if (err)
+                    logger.error('Player.getGameState: %s', err.message);
+                cb(err);
+            });
+        },
+        function(cb) {                        // ensure the player has credits
+            self.debugCredits(1000, true, function(err) {
+                if (err)
+                    logger.error('Player.debugCredits: %s', err.message);
+                cb(err);
+            });
+        }
+    ],
+    function(err) {
+        cb(err);
+    });
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Behavior-related code
+
+/**
+ * Here we dispatch, based on self.behaviorId to the correct implementation.
+ * @param {Function} cb Callback of form fn(err) where err is an Error object.
+ */
+Player.prototype.doBehavior = function(cb) {
+    var self = this;
+    // ensure we have a behavior for this id
+    assert.ok(is.func(self.Behavior[self.behaviorId]));
+    // create a function bound to this object instance
+    var behavior = self.Behavior[self.behaviorId].bind(self);
+    behavior(cb);
+};
+
+/**
+ * Create an object on the player prototype to hold the behaviors for easy
+ * dispatch. Normally, I avoid "clever" hacks like this because they can be
+ * hard for others to maintain, but it saves a lot of time to be able to have
+ * each key in the object map to self.behaviorId. 
+ *
+ * Before we call any of the functions in this object, we have to bind this,
+ * to a Player object reference. Small price to pay, though.
+ */
+Player.prototype.Behavior = {};
+
+/**
+ * This behavior has the following attributes:
+ * 1. Bets a random amount from 1 - self.player.credits
+ * 2. Stands on every hand.
+ * @param {Function} cb Callback of form fn(err) where err is an Error object.
+ */
+Player.prototype.Behavior[1] = function(cb) {
+    var self = this;
+    assert.ok(is.func(cb));
+    assert.ok(is.nonEmptyObj(self.player));
+    assert.ok(is.positiveInt(self.player.tableId));
+    assert.ok(is.nonEmptyStr(self.table.state));
+
+    logger.info('%s doing play behavior %d',self.name, self.behavior);
+
+    if (self.table.state === 'betting') {
+        var betAmt = Math.floor(Math.random() * (self.player.credits-1))+1;
+        logger.warn('%s bets %d', self.name, betAmt);
+        self.bet(betAmt, true, function(err) {
+            cb(err);
+        });
+        return;
+    } else {
+        // always stand
+        logger.debug('%s stands', self.name);
+        self.stand(true, function(err) {
+            if (err) {
+                logger.error('%s', err.message);
+                return cb(err);
+            }
+            cb(err);
+        });
+    }
+};
+
+/**
+ * This behavior has the following attributes:
+ * 1. Bets a random amount from 1 - self.player.credits
+ * 2. Hits 1x on every hand.
+ * @param {Function} cb Callback of form fn(err) where err is an Error object.
+ */
+Player.prototype.Behavior[2] = function(cb) {
+    var self = this;
+    assert.ok(is.func(cb));
+    assert.ok(is.nonEmptyObj(self.player));
+    assert.ok(is.positiveInt(self.player.tableId));
+    assert.ok(is.nonEmptyStr(self.table.state));
+    assert.ok(is.array(self.player.hand));
+
+    logger.info('%s doing play behavior %d',self.name, self.behavior);
+
+    if (self.table.state === 'betting') {
+        var betAmt = Math.floor(Math.random() * (self.player.credits-1))+1;
+        logger.warn('%s bets %d', self.name, betAmt);
+        self.bet(betAmt, true, function(err) {
+            cb(err);
+        });
+        return;
+    } else {
+        if (self.player.hand.length === 2) {
+            // hit 1x
+            logger.debug('%s hits', self.name);
+            self.hit(true, function(err) {
+                if (err) {
+                    logger.error('%s', err.message);
+                    return cb(err);
+                }
+                cb(err);
+            });
+        } else {
+            // always stand
+            logger.debug('%s stands', self.name);
+            self.stand(true, function(err) {
+                if (err) {
+                    logger.error('%s', err.message);
+                    return cb(err);
+                }
+                cb(err);
+            });
+        }
+    }
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // REST API methods
@@ -260,7 +261,6 @@ Player.prototype.login = function(success, cb) {
         self.playerId = json.playerId;
         self.loggedIn = true;
         self.tables = json.tables;
-        logger.debug('====login self: %j', self);
         cb(null, json);
     });
 };
@@ -308,7 +308,6 @@ Player.prototype.joinTable = function(tableId, success, cb) {
         self.tableId = json.table.id;
         self.table = json.table;
         self.player = json.player;
-        logger.warn('joinTable self: %j',self);
         cb(null, json);
     });
 };
@@ -331,6 +330,8 @@ Player.prototype.leaveTable = function(success, cb) {
         assert.ok(json.cmd === 'leaveTable');
         assert.ok(is.nonEmptyObj(json.tables));
         self.tables = json.tables;
+        assert.ok(is.nonEmptyObj(json.player));
+        self.player = json.player;
         cb(null, json);
     });
 };
@@ -355,6 +356,8 @@ Player.prototype.bet = function(bet, success, cb) {
         assert.ok(bet === json.player.bet);
         assert.ok(is.nonEmptyObj(json.table));
         self.table = json.table;
+        assert.ok(is.nonEmptyObj(json.player));
+        self.player = json.player;
         cb(null, json);
     });
 };
@@ -371,8 +374,7 @@ Player.prototype.hit = function(success, cb) {
     restApi.hit(body, function(err, json) {
         if (err)
             return cb(err);
-        var inspect = require('util').inspect;
-        logger.error('>>> hit:\n%s',inspect(json, {depth:null}));
+        //var inspect = require('util').inspect;
         assert.ok(is.nonEmptyObj(json));
         if (is.bool(success))
             assert.ok(json.success === success);
@@ -403,8 +405,8 @@ Player.prototype.stand = function(success, cb) {
         assert.ok(json.cmd === 'stand');
         assert.ok(is.nonEmptyObj(json.table));
         self.table = json.table;
-        assert.ok(is.nonEmptyObj(json.hand));
-        self.hand = json.hand;
+        assert.ok(is.nonEmptyObj(json.player));
+        self.player = json.player;
         cb(null, json);
     });
 };
@@ -427,6 +429,8 @@ Player.prototype.debugCredits = function(credits, success, cb) {
         assert.ok(json.cmd === 'debug/credits');
         assert.ok(is.nonEmptyObj(json.player));
         self.player = json.player;
+        assert.ok(is.nonEmptyObj(json.table));
+        self.table = json.table;
         cb(null, json);
     });
 };
@@ -448,10 +452,15 @@ Player.prototype.debugGetPlayer = function(success, cb) {
         assert.ok(json.cmd === 'debug/getPlayer');
         assert.ok(is.nonEmptyObj(json.player));
         self.player = json.player;
+        assert.ok(is.nonEmptyObj(json.table));
+        self.table = json.table;
         cb(null, json);
     });
 };
 
+/**
+ *
+ */
 Player.prototype.debugGameState = function(success, cb) {
     var self = this;
     logger.debug('%s is getting debug game state!',self.name);
@@ -465,13 +474,12 @@ Player.prototype.debugGameState = function(success, cb) {
         if (is.bool(success))
             assert.ok(json.success === success);
         assert.ok(json.cmd === 'debug/gameState');
-        if (json.table)
-            self.table = json.table;
+        assert.ok(is.nonEmptyObj(json.table));
+        self.table = json.table;
         assert.ok(is.nonEmptyObj(json.player));
         self.player = json.player;
         assert.ok(is.nonEmptyObj(json.tables));
         self.tables = json.tables;
-        logger.warn('debug/GameState self: %j',self);
         cb(null, json);
     });
 };
