@@ -1,6 +1,18 @@
 Blackjack
 =========
 
+# Running
+
+First start the server:
+
+* cd to the root of this project where the package.json is
+* Run: `./bin/server.sh`
+
+Then, start a client:
+
+* cd to the root of this project where the package.json is
+* Run: `./bin/client.sh`
+
 # Requirements
 
 * Server must have an REST API for playing Blackjack (done)
@@ -8,7 +20,7 @@ Blackjack
   (done)
 * Must support player actions:
     * login (done)
-    * quit
+    * logout (done)
     * view the tables (done)
     * join a table (done)
     * leave a table (done)
@@ -25,7 +37,7 @@ Blackjack
     * Dealer will draw if under hard 17 and player has a better hand (done)
 * Support multiple players (done)
     * Works, but multiple players at the same table is not tested
-    * The client would need to poll to detect when hand is over (not
+    * The client needs to poll to detect when hand is over (not
       implemented)
 * Support multiple concurrent blackjack games (done)
     * Works, limit 1 player per table
@@ -35,7 +47,7 @@ Blackjack
 * If a player is not at a table, they are in the "lobby" (done)
     * From the lobby, players can join tables, view tables and quit (done)
 * When players leave a table or quit and have a bet on a hand in-progress, they
-  should lose the bet (not implemented)
+  should lose the bet (done)
 
 **Stretch goals**
 
@@ -257,13 +269,13 @@ information describing all the tables.
 * **interval** - time to check for next hand of dealt cards in milliseconds
 * **balance** - player&#39;s winnings (or losses)
 
-## quitGame
+## logout
 Allows players to drop out of the game.
 
 **Request Format**
 
 * Method: `POST`
-* URI path: `/quitGame`
+* URI path: `/logout`
 
 **JSON Request Body**
 
@@ -276,10 +288,7 @@ Allows players to drop out of the game.
 
 **JSON Response**
 
-
-    { "success": true, "cmd": "quitGame", "balance": 4556 }
-
-* **balance** - the player&#39;s winnings or losses when they left
+    { "success": true, "cmd": "logout", "credits": 1023 }
 
 ## bet
 Indicates players are in on the next hand and the amount they are betting.
@@ -588,13 +597,13 @@ box; point with two fingers spread into a V formation.
   hand2, there will also be a h2_over21
 * **done** - True if the player&#39;s interest in the hand is concluded
 
-## debug/credits
+## debugCredits
 Allows developers to set the amount of credits a player has to any value.
 
 **Request Format**
 
 * Method: POST`
-* URI path: `/debug/credits`
+* URI path: `/debugCredits`
 
 **Request Body**
 
@@ -602,14 +611,14 @@ Allows developers to set the amount of credits a player has to any value.
 { "playerId": 3, "credits": 999 }
 ```
 
-## debug/getPlayer
+## debugGetPlayer
 Allows developers to get the player information. It uses a POST because I was
 too pressed for time to expand json-rest-api to handle query strings.
 
 **Request Format**
 
 * Method: POST`
-* URI path: `/debug/getPlayer`
+* URI path: `/debugGetPlayer`
 
 **Request Body**
 
