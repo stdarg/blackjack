@@ -3,35 +3,37 @@ Blackjack
 
 # Requirements
 
-* Server must have an REST API for playing Blackjack
+* Server must have an REST API for playing Blackjack (done)
 * Must support: way to receive 2 starting cards & dealer&#39;s initial card
+  (done)
 * Must support player actions:
-    * login
+    * login (done)
     * quit
-    * view the tables
-    * join a table
-    * leave a table
-    * bet
-    * hit
-    * stand
+    * view the tables (done)
+    * join a table (done)
+    * leave a table (done)
+    * bet (done)
+    * hit (done)
+    * stand (done)
     * double down (not implemented)
     * surrender (not implemented)
     * split (not implemented)
 * After a player&#39;s final action in a hand, they should learn the outcome
-* Use a typical dealer strategy of standing on 17 or greater
-    * Dealer will draw on soft 17
-    * Dealer will draw if under hard 17 and player has a better hand
-* Support multiple players
+  (done)
+* Use a typical dealer strategy of standing on 17 or greater (done)
+    * Dealer will draw on soft 17 (done)
+    * Dealer will draw if under hard 17 and player has a better hand (done)
+* Support multiple players (done)
     * Works, but multiple players at the same table is not tested
     * The client would need to poll to detect when hand is over (not
       implemented)
-* Support multiple concurrent blackjack games
+* Support multiple concurrent blackjack games (done)
     * Works, limit 1 player per table
-* Use an 8-deck shoe with a cut-point 75% into the shoe
+* Use an 8-deck shoe with a cut-point 75% into the shoe (done)
     * After each hand, if the deck is past the cut point, the old shoe is
-      discarded and a new shoe is created
-* If a player is not at a table, they are in the "lobby"
-    * From the lobby, players can join tables, view tables and quit.
+      discarded and a new shoe is created (done)
+* If a player is not at a table, they are in the "lobby" (done)
+    * From the lobby, players can join tables, view tables and quit (done)
 * When players leave a table or quit and have a bet on a hand in-progress, they
   should lose the bet (not implemented)
 
@@ -74,8 +76,8 @@ persistence (so domains were not needed).
 
 There are things I would change, though:
 
-* More unit tests!
-* More behaviors for the user tests!
+* More unit tests.
+* More behaviors for the user tests.
 * The mersenne-twister module is entirely JavaScript and is too slow.
     * You can see how the creation of the 8-deck shoe takes over 100ms (too
       long) by running the unit tests
