@@ -1,5 +1,7 @@
-Requirements
-============
+Blackjack
+=========
+
+# Requirements
 
 * Server must have an REST API for playing Blackjack
 * Must support: way to receive 2 starting cards & dealer&#39;s initial card
@@ -17,20 +19,77 @@ Requirements
     * split (not implemented)
 * After a player&#39;s final action in a hand, they should learn the outcome
 * Use a typical dealer strategy of standing on 17 or greater
+    * Dealer will draw on soft 17
+    * Dealer will draw if under hard 17 and player has a better hand
 * Support multiple players
+    * Works, but multiple players at the same table is not tested
+    * The client would need to poll to detect when hand is over (not
+      implemented)
 * Support multiple concurrent blackjack games
+    * Works, limit 1 player per table
 * Use an 8-deck shoe with a cut-point 75% into the shoe
+    * After each hand, if the deck is past the cut point, the old shoe is
+      discarded and a new shoe is created
 * If a player is not at a table, they are in the "lobby"
-    * From the lobby, players can join tables and view tables
+    * From the lobby, players can join tables, view tables and quit.
+* When players leave a table or quit and have a bet on a hand in-progress, they
+  should lose the bet (not implemented)
 
-Stretch goals
+**Stretch goals**
 
-* Character-based Node.js client
+* Character-based Node.js client (done)
 * Test framework with multiple concurrent clients that do set actions and random
-  actions
-* Discovery between client and server using UDP broadcast
-* Chat functionality for players
-* Player persistance for score (winnings)
+  actions (done)
+* Discovery between client and server using UDP broadcast (not implemented)
+* Chat functionality for players (not implemented)
+* Player persistance for score (winnings) (not implemented)
+
+# Comments
+
+I was able to complete this amount of work by leveraging existing modules.
+Mocha, async, prompt and request all saved an immense amount of time.
+
+Additionally, many of the modules were written previously by myself:
+
+* [config-js](https://www.npmjs.org/package/config-js "NPM page") - config
+  module. Support for regions and auto-load when file changes
+* [fuzelog](https://www.npmjs.org/package/fuzelog "NPM page") - logger fusing
+  log.js with log4js's layouts and colors, supporting console and file logging
+* [is2](https://www.npmjs.org/package/is2 "NPM page") - type checking library
+  where each function returns either true or false
+* [json-rest-api](https://www.npmjs.org/package/json-rest-api "NPM page") -
+  lightweight REST API that receives and responds to JSON HTTP requests,
+  supports all verbs
+* [sprintf.js](https://www.npmjs.org/package/sprintf.js "NPM page") - almost
+  complete implementation of the printf and sprintf
+* [tcp-port-used](https://www.npmjs.org/package/tcp-port-used "NPM page") -
+  check if a TCP port is already bound
+
+# Reflections
+
+I'm happy with how it came out. The try/catch on the end-points enabled liberal
+use of "assert" and "have" worry-free since everything happens as a result of a
+REST call and there is no asynchronous code outside of the networking, due to no
+persistence (so domains were not needed).
+
+There are things I would change, though:
+
+* More unit tests!
+* More behaviors for the user tests!
+* The mersenne-twister module is entirely JavaScript and is too slow.
+    * You can see how the creation of the 8-deck shoe takes over 100ms (too
+      long) by running the unit tests
+* The representation of the cards as self-describing objects in the decks made
+  the client simplier, but for a production system, I would use indicies
+  referring to the ordered deck to reduce the memory footprint.
+* json-rest-api, while faster than express.js (due to simplicity), needs a
+  concept of middleware and I was surprised I did not add support for query
+  strings. If I was serious about this, I'd either switch to express or put
+  work into json-rest-api.
+* In a production system there would be async calls for persistance, and with
+  that, I would need to add support for domains.
+* config-js really needs to use NODE_ENV to have support for development,
+  staging and production configuration files.
 
 # REST API
 
@@ -543,7 +602,7 @@ Allows developers to set the amount of credits a player has to any value.
 
 ## debug/getPlayer
 Allows developers to get the player information. It uses a POST because I was
-too pressed for time to expand json-rest-api to handle query strings. 
+too pressed for time to expand json-rest-api to handle query strings.
 
 **Request Format**
 
