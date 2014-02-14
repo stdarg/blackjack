@@ -196,6 +196,22 @@ function doRestTests() {
             });
         });
 
+        it('debugGameState should retrieve the player, table and tables',
+        function(done) {
+            var qs = { playerId: playerId };
+            restApi.debugGameState(qs, function(err, json) {
+                if (err)
+                    return done(err);
+                //var inspect = require('util').inspect;
+                //console.log('\njson: '+inspect(json,{depth:null,colors:true}));
+                assert.ok(json.success === true);
+                assert.ok(is.nonEmptyObj(json.player));
+                assert.ok(is.nonEmptyObj(json.table));
+                assert.ok(is.nonEmptyObj(json.tables));
+                done();
+            });
+        });
+
         it('leaveTable should place a user in the lobby (again)',
         function(done) {
             var body = { playerId: playerId };

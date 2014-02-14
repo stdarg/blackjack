@@ -26,7 +26,7 @@
     "fuzelog": "1.4.7",
     "have": "0.2.3",
     "is2": "0.0.12",
-    "json-rest-api": "0.0.5",
+    "json-rest-api": "0.1.1",
     "lodash": "2.4.1",
     "mersenne-twister": "1.0.1",
     "prompt": "0.2.12",
