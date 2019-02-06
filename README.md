@@ -6,8 +6,6 @@ Blackjack
 * server: `node express_server.js`
 * client: `node express_client.js`
 
-=========
-
 # Running
 
 First start the server:
