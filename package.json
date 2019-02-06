@@ -1,41 +1,47 @@
 {
-  "name": "blackjack",
-  "version": "0.0.1",
-  "description": "A simple blackjack server with client.",
-  "main": "index.js",
-  "bin": {
-    "blackjack_server": "./bin/server.js",
-    "blackjack": "./bin/client.js"
-  },
-  "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter list"
-  },
-  "keywords": [
-    "blackjack", "game", "server", "client", "card", "casino", "betting", "bet"
-  ],
-  "author": "Edmond Meinfelder",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/stdarg/blackjack.git"
-  },
+  "name": "blackjackapi",
+  "version": "1.0.0",
+  "description": "blackjack api",
+  "main": "server.js",
   "dependencies": {
     "async": "0.2.10",
+    "body-parser": "^1.18.3",
     "config-js": "0.0.7",
     "debug": "0.7.4",
+    "express": "^4.16.4",
     "fuzelog": "1.4.7",
     "have": "0.2.3",
     "is2": "0.0.13",
+    "jade": "^1.11.0",
     "json-rest-api": "0.1.1",
     "lodash": "2.4.1",
     "mersenne-twister": "1.0.1",
+    "mongoose": "~4.11.14",
+    "morgan": "~1.9.0",
     "prompt": "0.2.12",
     "request": "2.33.0",
     "sprintf.js": "0.1.4",
     "tcp-port-used": "0.1.2"
   },
   "devDependencies": {
-    "mocha": "1.17.1",
-    "names": "0.0.2"
-  }
+    "express": "^4.16.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bws9000/blackjack-1.git"
+  },
+  "keywords": [
+    "blackjack",
+    "api"
+  ],
+  "author": "burtwileysnyder@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bws9000/blackjack-1/issues"
+  },
+  "homepage": "https://github.com/bws9000/blackjack-1#readme"
 }

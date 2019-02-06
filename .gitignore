@@ -14,6 +14,13 @@ results
 npm-debug.log
 node_modules
 
+# notes
+NOTES*
+_*
+
+#package-lock
+#package-lock*
+
 # ignore Apple DS Store
 *.DS_Store
 
@@ -39,4 +46,3 @@ tags
 
 # C temp files
 *.[oa]
-
